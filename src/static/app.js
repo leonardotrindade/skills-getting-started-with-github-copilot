@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         availability.innerHTML = `<strong>Availability:</strong> ${spotsLeft} spots left`;
         activityCard.appendChild(availability);
 
-        // Participants section
+        // Participants section (show up to 5, then "+N more")
         const participantsWrap = document.createElement("div");
         participantsWrap.className = "participants";
 
@@ -51,11 +51,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (details.participants.length > 0) {
           const ul = document.createElement("ul");
           ul.className = "participants-list";
-          details.participants.forEach((p) => {
+          const MAX_VISIBLE = 5;
+          details.participants.slice(0, MAX_VISIBLE).forEach((p) => {
             const li = document.createElement("li");
             li.textContent = p;
             ul.appendChild(li);
           });
+          if (details.participants.length > MAX_VISIBLE) {
+            const moreLi = document.createElement("li");
+            moreLi.className = "participants-more";
+            moreLi.textContent = `+${details.participants.length - MAX_VISIBLE} more`;
+            ul.appendChild(moreLi);
+          }
           participantsWrap.appendChild(ul);
         } else {
           const noParticipants = document.createElement("p");
@@ -100,6 +107,9 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+
+        // Refresh activities so the new participant appears immediately
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
